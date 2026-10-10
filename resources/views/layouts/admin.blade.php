@@ -7,10 +7,20 @@
     <title>@yield('title', 'Pinjam Ruang')</title>
 </head>
 <body>
+    <nav>
+        <ul>
+            <li>
+                <a href="/admin/majors">major</a>
+            </li>
+            <li>
+                <a href="/admin/buildings">buildings</a>
+            </li>
+        </ul>
+    </nav>
     <form action="/logout" method="post">
         @csrf
         @method('post')
-        <button>logout</button>
+        <button onclick="return confirm('logout?')">logout</button>
     </form>
     @yield('content')
 </body>
