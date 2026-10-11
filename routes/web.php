@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BuildingController;
 use App\Http\Controllers\Admin\MajorController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminDashboardController;
@@ -18,6 +19,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin')->prefix('/admin')->group(function () {
         Route::get('/', [AdminDashboardController::class, 'index']);
         Route::resource('/majors', MajorController::class);
+        Route::resource('/buildings', BuildingController::class);
     });
 
     Route::middleware('role:staff')->prefix('/staff')->group(function () {
