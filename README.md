@@ -213,5 +213,139 @@ Alur autentikasi pada `AuthController` dapat diringkas sebagai berikut:
 - Menggunakan session invalidation dan CSRF token regeneration saat logout.
 - Menggunakan flash message dan validation errors untuk memberikan umpan balik kepada pengguna.
 
+## 2.2 Admin Controllers
+
+Admin controllers bertanggung jawab menangani pengelolaan data yang hanya dapat diakses melalui route admin. Pada project ini, terdapat dua controller utama, yaitu `BuildingController` untuk pengelolaan gedung dan `MajorController` untuk pengelolaan jurusan.
+
+Kedua controller menggunakan Eloquent ORM untuk berinteraksi dengan database serta memanfaatkan validasi Laravel untuk memeriksa input pengguna.
+
+### A. BuildingController
+
+**File:** `app/Http/Controllers/Admin/BuildingController.php`
+
+`BuildingController` menangani operasi CRUD data gedung serta pengelolaan hubungan antara gedung dan jurusan melalui model `BuildingMajor`.
+
+#### 1. Index — Menampilkan Data Gedung
+
+Method `index()` mengambil parameter pencarian dari request, kemudian menjalankan query menggunakan Eloquent.
+
+Implementasi ini menggunakan `when()` untuk menerapkan filter nama gedung hanya ketika input pencarian tersedia. Relasi `majors` dimuat menggunakan `with()` agar data jurusan terkait dapat diakses tanpa harus menjalankan query relasi berulang kali.
+
+Controller juga memeriksa `$request->ajax()`. Jika request berasal dari AJAX, controller mengembalikan partial view tabel. Jika tidak, controller menampilkan halaman utama daftar gedung.
+
+View yang digunakan:
+- `admin.buildings.index`
+- `admin.buildings.partials.table`
+
+#### 2. Create — Form Tambah Gedung
+
+Method `create()` mengambil seluruh data jurusan melalui `Major::get()`, kemudian mengirimkannya ke view `admin.buildings.create`.
+
+Data jurusan digunakan sebagai pilihan pada formulir sehingga pengguna dapat menentukan jurusan yang berhubungan dengan gedung.
+
+#### 3. Store — Menyimpan Data Gedung
+
+Method `store()` memvalidasi input sebelum menyimpan data.
+
+Aturan validasi yang diterapkan:
+- `building_name`: wajib diisi dan harus unik pada tabel `buildings`.
+- `major_id`: boleh kosong, harus berupa bilangan bulat jika diisi, dan harus merujuk pada data jurusan yang tersedia.
+
+Setelah validasi berhasil, controller membuat data gedung menggunakan `Building::create()`, kemudian membuat data relasi melalui `BuildingMajor::create()`.
+
+Dengan demikian, penyimpanan gedung dan relasi jurusannya dilakukan melalui dua model yang berbeda.
+
+#### 4. Edit — Menampilkan Form Edit
+
+Method `edit(Building $building)` menggunakan *Route Model Binding* untuk memperoleh data gedung berdasarkan parameter route.
+
+Controller mencari relasi gedung melalui `BuildingMajor`, mengambil data jurusan yang terhubung jika tersedia, lalu mengirimkan data gedung dan daftar jurusan ke view `admin.buildings.edit`.
+
+Jika belum terdapat relasi jurusan, variabel `$major` akan bernilai `null`.
+
+#### 5. Update — Memperbarui Data Gedung
+
+Method `update()` memvalidasi input nama gedung dan jurusan sebelum memperbarui data.
+
+Validasi nama gedung menggunakan aturan unik dengan pengecualian ID gedung yang sedang diedit. Hal ini memungkinkan nama gedung tetap dipertahankan tanpa dianggap duplikat.
+
+Setelah nama gedung diperbarui, controller menghapus relasi sebelumnya pada `BuildingMajor`. Jika `major_id` baru diisi, controller membuat relasi pengganti.
+
+Pola ini memungkinkan hubungan gedung dengan jurusan diubah atau dihapus ketika pilihan jurusan dikosongkan.
+
+#### 6. Destroy — Menghapus Data Gedung
+
+Method `destroy(Building $building)` menghapus data gedung melalui Eloquent, kemudian mengarahkan pengguna kembali ke `/admin/buildings` dengan pesan keberhasilan.
+
+Penghapusan data relasi terkait bergantung pada konfigurasi foreign key, cascade delete, atau mekanisme penghapusan lain yang diterapkan pada database.
+
+### B. MajorController
+
+**File:** `app/Http/Controllers/Admin/MajorController.php`
+
+`MajorController` bertanggung jawab mengelola data jurusan melalui operasi CRUD. Controller menggunakan model `Major` untuk mengambil, menyimpan, memperbarui, dan menghapus data jurusan.
+
+#### 1. Index — Menampilkan Data Jurusan
+
+Method `index()` menerima input pencarian melalui parameter `search`. Query menggunakan `when()` untuk memfilter kolom `major` berdasarkan kata kunci yang dimasukkan.
+
+Jika request merupakan AJAX, controller mengembalikan partial view `admin.majors.partials.table`. Untuk request biasa, controller menampilkan view `admin.majors.index`.
+
+Implementasi ini mendukung pencarian data tanpa harus menggunakan query SQL mentah.
+
+#### 2. Create — Form Tambah Jurusan
+
+Method `create()` menampilkan view `admin.majors.create`, yang digunakan sebagai formulir penambahan data jurusan.
+
+#### 3. Store — Menyimpan Data Jurusan
+
+Method `store()` memvalidasi input `major` menggunakan dua aturan:
+- `required`: nama jurusan wajib diisi.
+- `unique:majors,major`: nama jurusan tidak boleh sama dengan data yang sudah ada pada tabel `majors`.
+
+Setelah validasi berhasil, data disimpan menggunakan `Major::create()`.
+
+#### 4. Edit — Menampilkan Form Edit
+
+Method `edit(Major $major)` menggunakan *Route Model Binding* untuk mengambil data jurusan yang akan diedit, kemudian mengirimkannya ke view `admin.majors.edit`.
+
+#### 5. Update — Memperbarui Data Jurusan
+
+Method `update()` memvalidasi nama jurusan menggunakan facade `Rule`.
+
+Aturan `Rule::unique('majors', 'major')->ignore($major->id)` memastikan nama jurusan tetap unik dengan mengecualikan data yang sedang diperbarui.
+
+Pesan validasi khusus juga disediakan untuk memberi informasi yang lebih jelas ketika nama jurusan belum diisi atau sudah terdaftar.
+
+Jika validasi berhasil, perubahan disimpan melalui `$major->update($validatedData)`.
+
+#### 6. Destroy — Menghapus Data Jurusan
+
+Method `destroy(Major $major)` menghapus data jurusan menggunakan Eloquent, lalu mengarahkan pengguna kembali ke `/admin/majors` dengan pesan keberhasilan.
+
+Keberhasilan penghapusan juga bergantung pada apakah jurusan tersebut masih digunakan oleh data relasi atau tabel lain yang memiliki foreign key.
+
+### C. Implementasi Teknis
+
+Kedua controller menerapkan beberapa fitur Laravel berikut:
+
+| Fitur | Implementasi |
+|---|---|
+| Eloquent ORM | Mengelola data melalui model |
+| CRUD | `index()`, `create()`, `store()`, `edit()`, `update()`, `destroy()` |
+| Request Validation | `$request->validate()` |
+| Route Model Binding | Parameter `Building $building` dan `Major $major` |
+| Conditional Query | `when()` untuk pencarian |
+| AJAX Response | Pemeriksaan `$request->ajax()` |
+| Partial View | Mengembalikan bagian tabel secara terpisah |
+| Flash Message | `with('success', ...)` |
+| Relationship Management | Model `BuildingMajor` dan relasi `majors` |
+
+### D. Catatan Implementasi
+
+Pada `BuildingController`, aturan validasi `major_id` memperbolehkan nilai kosong. Namun, method `store()` tetap mencoba mengakses `$major->id` setelah pencarian jurusan. Jika `major_id` tidak diisi atau tidak menghasilkan data jurusan, proses penyimpanan relasi berpotensi gagal.
+
+Selain itu, penyimpanan gedung dan relasinya dilakukan melalui dua operasi terpisah. Penggunaan database transaction dan penanganan nilai `major_id` yang kosong perlu dipertimbangkan agar proses penyimpanan lebih konsisten.
+
 
 
