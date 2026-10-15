@@ -67,3 +67,151 @@ Middleware role diterapkan di dalam grup `auth`, sehingga pengguna harus melewat
 - Resource routing menyederhanakan pendefinisian endpoint CRUD.
 - Detail implementasi autentikasi dan validasi role ditangani oleh controller serta middleware terkait.
 
+## 2. Controllers
+
+### Overview
+
+Controller merupakan bagian dari arsitektur MVC (*Model-View-Controller*) yang bertanggung jawab menangani request dari pengguna, menjalankan logika aplikasi, dan menentukan response yang diberikan.
+
+Pada project ini, `AuthController` menangani proses autentikasi pengguna, mulai dari menampilkan halaman login, memvalidasi kredensial, menentukan redirect berdasarkan role, hingga mengakhiri sesi pengguna.
+
+### AuthController
+
+**File:** `app/Http/Controllers/AuthController.php`
+
+`AuthController` menggunakan facade `Auth` untuk mengelola autentikasi Laravel dan class `Request` untuk menerima serta memvalidasi input dari pengguna.
+
+#### 1. Login Page
+
+Method `login()` digunakan untuk menampilkan halaman login melalui view `auth.login`.
+
+```php
+public function login()
+{
+    return view('auth.login');
+}
+```
+
+Method ini tidak memproses autentikasi, tetapi hanya mengembalikan halaman login agar pengguna dapat memasukkan email dan password.
+
+#### 2. Authentication Process
+
+Method `authenticate(Request $request)` menangani proses login pengguna.
+
+```php
+$credentials = $request->validate([
+    'email' => 'required|email',
+    'password' => 'required',
+]);
+```
+
+Input email dan password divalidasi sebelum digunakan. Email wajib diisi dan harus memiliki format email yang valid, sedangkan password wajib diisi.
+
+```php
+if (Auth::attempt($credentials)) {
+    $request->session()->regenerate();
+```
+
+`Auth::attempt()` memeriksa kredensial menggunakan mekanisme autentikasi Laravel. Jika berhasil, session ID diperbarui melalui `regenerate()` untuk membantu mencegah session fixation.
+
+#### 3. Role-Based Redirection
+
+Setelah autentikasi berhasil, aplikasi membaca role pengguna dan mengarahkan pengguna ke dashboard yang sesuai.
+
+```php
+$role = Auth::user()->role;
+
+return match ($role) {
+    'admin' => redirect('/admin'),
+    'staff' => redirect('/staff'),
+    'class_representative' => redirect('/class-representative'),
+    default => $this->logoutInvalidRole($request),
+};
+```
+
+Pemetaan redirect yang diterapkan:
+
+| Role | Destination |
+|---|---|
+| `admin` | `/admin` |
+| `staff` | `/staff` |
+| `class_representative` | `/class-representative` |
+| Role lainnya | Logout dan redirect ke `/login` |
+
+Pernyataan `match` digunakan untuk menentukan tujuan redirect berdasarkan nilai role. Jika role tidak termasuk dalam daftar yang didukung, aplikasi memanggil `logoutInvalidRole()`.
+
+#### 4. Invalid Role Handling
+
+Method `logoutInvalidRole()` menangani akun yang berhasil diautentikasi tetapi memiliki role yang tidak dikenali oleh aplikasi.
+
+```php
+Auth::logout();
+
+$request->session()->invalidate();
+$request->session()->regenerateToken();
+```
+
+Proses ini mencakup penghapusan status autentikasi, invalidasi session, dan regenerasi CSRF token. Setelah itu, pengguna diarahkan kembali ke halaman login dengan pesan bahwa role akun tidak valid.
+
+#### 5. Failed Authentication
+
+Jika `Auth::attempt()` gagal, pengguna dikembalikan ke halaman sebelumnya dengan pesan kesalahan.
+
+```php
+return back()
+    ->withErrors([
+        'email' => 'Email atau password yang Anda masukkan salah.',
+    ])
+    ->onlyInput('email');
+```
+
+Pesan kesalahan ditampilkan melalui mekanisme error session Laravel. Method `onlyInput('email')` mempertahankan input email, tetapi tidak mempertahankan password.
+
+#### 6. Logout Process
+
+Method `logout(Request $request)` digunakan untuk mengakhiri sesi pengguna yang sedang login.
+
+```php
+Auth::logout();
+
+$request->session()->invalidate();
+$request->session()->regenerateToken();
+
+return redirect('/login')->with(
+    'success',
+    'Anda berhasil logout.'
+);
+```
+
+Tahapan logout meliputi:
+
+1. Menghapus status autentikasi pengguna.
+2. Membatalkan session yang sedang aktif.
+3. Membuat ulang CSRF token.
+4. Mengarahkan pengguna ke halaman login dengan pesan keberhasilan.
+
+### Authentication Flow
+
+Alur autentikasi pada `AuthController` dapat diringkas sebagai berikut:
+
+1. Pengguna membuka halaman login.
+2. Pengguna mengirimkan email dan password.
+3. Aplikasi memvalidasi input.
+4. Laravel memeriksa kredensial menggunakan `Auth::attempt()`.
+5. Jika gagal, aplikasi menampilkan pesan kesalahan.
+6. Jika berhasil, session ID diperbarui dan role pengguna diperiksa.
+7. Pengguna diarahkan ke dashboard sesuai role.
+8. Jika role tidak valid, sesi diakhiri dan pengguna dikembalikan ke halaman login.
+
+### Technical Notes
+
+- Menggunakan facade `Illuminate\Support\Facades\Auth` untuk autentikasi.
+- Menggunakan validasi Laravel melalui `$request->validate()`.
+- Menggunakan `Auth::attempt()` untuk memverifikasi kredensial.
+- Menggunakan `match` untuk pemetaan role ke URL dashboard.
+- Menggunakan session regeneration untuk meningkatkan keamanan sesi.
+- Menggunakan session invalidation dan CSRF token regeneration saat logout.
+- Menggunakan flash message dan validation errors untuk memberikan umpan balik kepada pengguna.
+
+
+
