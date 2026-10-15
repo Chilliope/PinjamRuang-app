@@ -1,3 +1,70 @@
+# PinjamRuang
+
+## Gambaran Umum Proyek
+
+PinjamRuang merupakan aplikasi berbasis web yang dikembangkan menggunakan Laravel untuk mengelola data gedung, ruangan, pengguna, serta peminjaman ruang kelas di lingkungan institusi pendidikan.
+
+Aplikasi ini menerapkan pembagian hak akses berdasarkan peran (*role-based access control*) untuk memisahkan tanggung jawab setiap pengguna, mulai dari pengelolaan data utama hingga proses peminjaman ruang kelas.
+
+## Aktor dan Hak Akses
+
+Aplikasi PinjamRuang memiliki tiga aktor utama, yaitu Admin, Staff, dan Class Representative.
+
+### 1. Admin
+
+Admin bertanggung jawab mengelola data utama yang digunakan dalam sistem.
+
+Tanggung jawab:
+- Mengelola data gedung.
+- Mengelola data jurusan.
+- Mengelola akun pengguna, termasuk Admin, Staff, dan Class Representative.
+
+### 2. Staff
+
+Staff bertanggung jawab mengelola ruangan dan menangani peminjaman ruang kelas pada gedung yang menjadi tanggung jawabnya.
+
+Tanggung jawab:
+- Mengelola data ruangan pada gedung masing-masing.
+- Menangani proses peminjaman ruang kelas.
+- Mengelola informasi ruangan sesuai dengan hak akses yang diberikan.
+
+### 3. Class Representative
+
+Class Representative merupakan pengguna yang mengajukan peminjaman ruang kelas melalui aplikasi.
+
+Tanggung jawab:
+- Melihat informasi ruangan yang tersedia.
+- Mengajukan peminjaman ruang kelas.
+- Mengakses fitur peminjaman sesuai dengan hak akses yang diberikan.
+
+## Arsitektur Aplikasi
+
+PinjamRuang menggunakan arsitektur MVC (*Model-View-Controller*) yang disediakan oleh Laravel untuk memisahkan pengelolaan data, logika aplikasi, dan tampilan antarmuka.
+
+Komponen utama aplikasi meliputi:
+
+- **Routes:** Mengatur URL aplikasi dan menghubungkan permintaan dengan controller.
+- **Controllers:** Menangani logika aplikasi dan pemrosesan permintaan pengguna.
+- **Views:** Menampilkan antarmuka aplikasi kepada pengguna.
+- **Models:** Merepresentasikan data dan hubungan antarentitas dalam database.
+- **Migrations:** Mendefinisikan struktur tabel database.
+- **Seeders:** Menyediakan data awal untuk kebutuhan pengembangan atau pengujian.
+- **Middleware:** Mengatur autentikasi dan pembatasan akses berdasarkan peran pengguna.
+
+## Modul Utama Aplikasi
+
+| Modul | Aktor | Fungsi |
+|---|---|---|
+| Manajemen Pengguna | Admin | Mengelola akun dan peran pengguna |
+| Manajemen Gedung | Admin | Mengelola data gedung |
+| Manajemen Jurusan | Admin | Mengelola data jurusan |
+| Manajemen Ruangan | Staff | Mengelola ruangan pada gedung yang menjadi tanggung jawabnya |
+| Pengajuan Peminjaman | Class Representative | Mengajukan peminjaman ruang kelas |
+| Penanganan Peminjaman | Staff | Menangani pengajuan peminjaman ruang kelas |
+
+*Catatan: Rincian proses peminjaman akan disesuaikan dengan implementasi controller, model, dan tampilan yang digunakan dalam aplikasi.*
+
+
 ## 1. Routes
 
 **File:** `routes/web.php`
