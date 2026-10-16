@@ -1,4 +1,3 @@
-
 <aside id="app-sidebar"
     class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col border-r border-slate-200/80 bg-white text-slate-700 transition-transform duration-300 ease-in-out lg:translate-x-0">
 
@@ -41,18 +40,18 @@
                         ? 'bg-indigo-50 text-indigo-700'
                         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
 
-                    @if(request()->routeIs('users.*'))
+                    @if(request()->routeIs('admin.index'))
                         <span class="absolute bottom-2.5 left-0 top-2.5 w-[3px] rounded-r-full bg-indigo-600"></span>
                     @endif
 
                     <i data-lucide="gauge"
                         class="h-[18px] w-[18px] shrink-0 transition-colors
-                        {{ request()->routeIs('users.*') ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600' }}">
+                        {{ request()->routeIs('admin.index') ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600' }}">
                     </i>
 
                     <span>Dashboard</span>
 
-                    @if(request()->routeIs('admin.*'))
+                    @if(request()->routeIs('admin.index'))
                         <i data-lucide="chevron-right"
                             class="ml-auto h-4 w-4 text-indigo-400">
                         </i>
@@ -60,7 +59,7 @@
                 </a>
 
                 {{-- User --}}
-                <a href="/"
+                <a href="{{ route('users.index') }}"
                     class="group relative flex items-center gap-3 rounded-xl px-3.5 py-3 text-[13px] font-medium transition-all duration-200
                     {{ request()->routeIs('users.*')
                         ? 'bg-indigo-50 text-indigo-700'
