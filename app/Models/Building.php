@@ -21,4 +21,9 @@ class Building extends Model
     {
         return $this->belongsToMany(Major::class);
     }
+
+    public function rooms()
+    {
+        return $this->hasMany(Room::class);
+    }
 }
