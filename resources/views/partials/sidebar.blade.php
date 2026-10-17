@@ -134,7 +134,7 @@
                 </a>
 
                 {{-- Room --}}
-                <a href="/"
+                <a href="{{ route('rooms.index') }}"
                     class="group relative flex items-center gap-3 rounded-xl px-3.5 py-3 text-[13px] font-medium transition-all duration-200
                     {{ request()->routeIs('rooms.*')
                         ? 'bg-indigo-50 text-indigo-700'

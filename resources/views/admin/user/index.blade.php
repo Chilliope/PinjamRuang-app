@@ -89,42 +89,79 @@
         {{-- User Table --}}
         <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
-
-            <div
-                class="flex flex-col gap-4 border-b border-slate-200 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex flex-col gap-5 border-b border-slate-200 px-6 py-5 xl:flex-row xl:items-center xl:justify-between">
                 <div>
                     <h2 class="font-semibold text-slate-900">
                         Daftar Pengguna
                     </h2>
+
                     <p class="mt-1 text-sm text-slate-500">
-                        Kelola akun berdasarkan peran pengguna.
+                        Cari pengguna dan filter berdasarkan role.
                     </p>
                 </div>
 
                 <form action="{{ url('/admin/users') }}" method="GET"
-                    class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:flex xl:items-center">
 
-                    <label for="role" class="text-sm font-medium text-slate-600">
-                        Filter Role
-                    </label>
+                    {{-- Search Bar --}}
+                    <div class="relative">
+                        <i data-lucide="search"
+                            class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
 
-                    <select name="role" id="role" onchange="this.form.submit()"
-                        class="min-w-56 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100">
+                        <input type="search" name="search" value="{{ $search }}"
+                            placeholder="Cari nama atau email..."
+                            class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 xl:w-64">
+                    </div>
 
-                        @foreach ($roles as $value => $label)
-                            <option value="{{ $value }}" @selected($selectedRole === $value)>
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </select>
+                    {{-- Role Filter --}}
+                    <div class="relative">
+                        <i data-lucide="shield-check"
+                            class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
 
-                    <span
-                        class="inline-flex items-center justify-center rounded-xl bg-indigo-50 px-3 py-2.5 text-sm font-semibold text-indigo-700">
-                        {{ $users->total() }} pengguna
-                    </span>
+                        <select name="role"
+                            class="w-full appearance-none rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-9 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 xl:w-56">
+
+                            @foreach ($roles as $value => $label)
+                                <option value="{{ $value }}" @selected($selectedRole === $value)>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <i data-lucide="chevron-down"
+                            class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                    </div>
+
+                    {{-- Search Button --}}
+                    <button type="submit"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700">
+                        <i data-lucide="filter" class="h-4 w-4"></i>
+                        Terapkan
+                    </button>
+
+                    {{-- Reset --}}
+                    @if ($search !== '' || $selectedRole !== 'admin')
+                        <a href="{{ url('/admin/users') }}"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">
+                            <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+                            Reset
+                        </a>
+                    @endif
                 </form>
             </div>
 
+            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-3">
+                <p class="text-sm text-slate-500">
+                    Hasil pencarian:
+                    <span class="font-semibold text-slate-800">
+                        {{ $users->total() }} pengguna
+                    </span>
+                </p>
+
+                <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                    {{ $roles[$selectedRole] }}
+                </span>
+            </div>
 
             @if (session('success'))
                 <div
@@ -228,7 +265,8 @@
                 </div>
             @else
                 <div class="px-6 py-16 text-center">
-                    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                    <div
+                        class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                         <i data-lucide="users" class="h-7 w-7"></i>
                     </div>
 

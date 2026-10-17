@@ -19,15 +19,37 @@ class UserController extends Controller
             'class_representative' => 'Class Representative',
         ];
 
+        // Default role adalah Admin
         $selectedRole = $request->query('role', 'admin');
 
         if (! array_key_exists($selectedRole, $roles)) {
             $selectedRole = 'admin';
         }
 
-        $users = User::where('role', $selectedRole)->latest()->paginate(10)->withQueryString();
+        $search = $request->query('search', '');
 
-        return view('admin.user.index', compact('users', 'roles', 'selectedRole'));
+        $query = User::query()
+            ->where('role', $selectedRole);
+
+        // Cari berdasarkan fullname atau email
+        if (trim($search) !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('fullname', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        $users = $query->latest()->paginate(10)->withQueryString();
+
+        $totalUsers = User::count();
+
+        return view('admin.user.index', compact(
+            'users',
+            'roles',
+            'selectedRole',
+            'search',
+            'totalUsers'
+        ));
     }
 
     public function create()
