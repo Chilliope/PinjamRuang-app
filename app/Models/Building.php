@@ -26,4 +26,14 @@ class Building extends Model
     {
         return $this->hasMany(Room::class);
     }
+
+    public function staff(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'building_staff',
+            'building_id',
+            'staff_id'
+        )->withTimestamps();
+    }
 }
