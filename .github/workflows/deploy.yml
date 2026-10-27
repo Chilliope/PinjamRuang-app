@@ -34,18 +34,44 @@ jobs:
             && echo "Port SSH dapat dijangkau" \
             || (echo "Port SSH tidak dapat dijangkau"; exit 1)
 
+
+      - name: Siapkan SSH untuk upload
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_FINGERPRINT: ${{ secrets.DEPLOY_FINGERPRINT }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          ssh-keyscan -p "${{ secrets.DEPLOY_PORT }}" \
+            -t ecdsa "$DEPLOY_HOST" > ~/.ssh/known_hosts 2>/dev/null
+
+          ssh-keygen -E sha256 -lf ~/.ssh/known_hosts > /tmp/host_fingerprint.txt
+
+          grep -F "$DEPLOY_FINGERPRINT" /tmp/host_fingerprint.txt \
+            || { echo "Fingerprint tidak cocok"; exit 1; }
+
       - name: Upload hasil build Vite
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          fingerprint: ${{ secrets.DEPLOY_FINGERPRINT }}
-          source: "public/build/*"
-          target: ${{ secrets.DEPLOY_PATH }}/public/build/
-          strip_components: 2
-          overwrite: true
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -p "$DEPLOY_PORT" \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "mkdir -p '$DEPLOY_PATH/public/build'"
+
+          scp -i ~/.ssh/deploy_key \
+            -P "$DEPLOY_PORT" \
+            -r public/build/. \
+            "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/public/build/"
+
 
       - name: Update aplikasi di hosting
         uses: appleboy/ssh-action@v1.2.0
