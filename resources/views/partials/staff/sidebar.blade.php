@@ -45,9 +45,9 @@
             Menu Utama
         </p>
 
-        <a href="{{ url('/staff/dashboard') }}"
+        <a href="{{ url('/staff') }}"
            class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition
-           {{ request()->is('staff/dashboard') || request()->is('staff') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50 hover:text-indigo-600' }}">
+           {{ request()->is('/staff') || request()->is('staff') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50 hover:text-indigo-600' }}">
             <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
             <span>Dashboard</span>
         </a>
