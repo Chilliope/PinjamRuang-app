@@ -11,12 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Tes koneksi SSH
-        run: |
-          timeout 10 bash -c '</dev/tcp/${{ secrets.DEPLOY_HOST }}/${{ secrets.DEPLOY_PORT }}' \
-            && echo "Port SSH dapat dijangkau" \
-            || (echo "Port SSH tidak dapat dijangkau"; exit 1)
-
       - name: Ambil source code
         uses: actions/checkout@v4
 
@@ -30,6 +24,28 @@ jobs:
         run: |
           npm ci
           npm run build
+
+      - name: Tes koneksi SSH
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+        run: |
+          timeout 10 bash -c '</dev/tcp/$DEPLOY_HOST/$DEPLOY_PORT' \
+            && echo "Port SSH dapat dijangkau" \
+            || (echo "Port SSH tidak dapat dijangkau"; exit 1)
+
+      - name: Upload hasil build Vite
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          fingerprint: ${{ secrets.DEPLOY_FINGERPRINT }}
+          source: "public/build/*"
+          target: ${{ secrets.DEPLOY_PATH }}/public/build/
+          strip_components: 2
+          overwrite: true
 
       - name: Update aplikasi di hosting
         uses: appleboy/ssh-action@v1.2.0
@@ -45,21 +61,15 @@ jobs:
           script: |
             set -e
             cd "$DEPLOY_PATH"
+
             git pull --ff-only origin main
+
             composer install --no-dev --prefer-dist --optimize-autoloader
+
             rm -f public/hot
+
             php artisan optimize:clear
             php artisan config:cache
             php artisan view:cache
 
-      - name: Upload hasil build Vite
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          fingerprint: ${{ secrets.DEPLOY_FINGERPRINT }}
-          source: "public/build/*"
-          target: ${{ secrets.DEPLOY_PATH }}/public/build/
-          strip_components: 2
+            echo "Deployment PinjamRuang selesai."
