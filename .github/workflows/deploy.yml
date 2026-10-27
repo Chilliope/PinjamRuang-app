@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Tes koneksi SSH
+        run: |
+          timeout 10 bash -c '</dev/tcp/${{ secrets.DEPLOY_HOST }}/${{ secrets.DEPLOY_PORT }}' \
+            && echo "Port SSH dapat dijangkau" \
+            || (echo "Port SSH tidak dapat dijangkau"; exit 1)
+
       - name: Ambil source code
         uses: actions/checkout@v4
 
