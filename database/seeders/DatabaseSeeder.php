@@ -14,7 +14,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             MajorSeeder::class,
-            BuildingSeeder::class
+            BuildingSeeder::class,
+            BookingSeeder::class,
         ]);
     }
 }
