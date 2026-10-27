@@ -12,7 +12,7 @@
             </div>
 
             <p class="mb-2 text-sm font-semibold text-indigo-600">
-                WELCOME BACKK
+                WELCOME BACK
             </p>
 
             <h1 class="text-3xl font-bold tracking-tight text-slate-900">
