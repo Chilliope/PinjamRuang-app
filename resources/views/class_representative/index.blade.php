@@ -1,4 +1,4 @@
-@extends('layouts.class_representasive')
+@extends('layouts.class_representative')
 @section('Class Representative Dashboard - Pinjam Ruang')
 
 @section('content')

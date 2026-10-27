@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\StaffDashboardController;
 use App\Http\Controllers\ClassRepresentativeDashboardController;
+use App\Http\Controllers\ClassRepresentative\BookingController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -30,9 +31,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [StaffDashboardController::class, 'index']);
     });
 
-    Route::middleware('role:class_representative')->prefix('/class-representative')->group(function () {
-        Route::get('/', [ClassRepresentativeDashboardController::class, 'index']);
-    });
+    Route::middleware('role:class_representative')->prefix('/class-representative')->name('class-representative.')->group(function () {
+        Route::get('/', [ClassRepresentativeDashboardController::class,'index'])->name('dashboard');
+        
+            Route::resource('/bookings', BookingController::class)
+                ->only(['index', 'create', 'store', 'show']);
+        });
 });
 
 Route::get('/', function () {

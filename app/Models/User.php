@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -35,5 +36,16 @@ class User extends Authenticatable
             'staff_id',
             'building_id'
         )->withTimestamps();
+    }
+
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function reviewedBookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'reviewed_by');
     }
 }
