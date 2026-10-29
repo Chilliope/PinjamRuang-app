@@ -1,4 +1,3 @@
-```blade
 @extends('layouts.class_representative')
 
 @section('title', 'Peminjaman Ruangan - PinjamRuang')
@@ -247,4 +246,3 @@
 
 </div>
 @endsection
-```
