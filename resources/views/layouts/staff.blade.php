@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,12 +26,8 @@
             <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
 
                 <div class="flex items-center gap-3">
-                    <button
-                        id="staff-sidebar-open"
-                        type="button"
-                        aria-label="Buka menu navigasi"
-                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition hover:bg-slate-50 lg:hidden"
-                    >
+                    <button id="staff-sidebar-open" type="button" aria-label="Buka menu navigasi"
+                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition hover:bg-slate-50 lg:hidden">
                         <i data-lucide="menu" class="h-5 w-5"></i>
                     </button>
 
@@ -52,7 +49,8 @@
                         <p class="text-xs text-slate-500">Staff</p>
                     </div>
 
-                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
                         {{ strtoupper(substr(auth()->user()->fullname ?? 'S', 0, 1)) }}
                     </div>
                 </div>
@@ -63,14 +61,16 @@
 
             {{-- Flash Messages --}}
             @if (session('success'))
-                <div class="mb-6 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+                <div
+                    class="mb-6 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
                     <i data-lucide="check-circle" class="mt-0.5 h-5 w-5 shrink-0"></i>
                     <p>{{ session('success') }}</p>
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="mb-6 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+                <div
+                    class="mb-6 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
                     <i data-lucide="alert-circle" class="mt-0.5 h-5 w-5 shrink-0"></i>
                     <p>{{ session('error') }}</p>
                 </div>
@@ -81,12 +81,57 @@
 
     </div>
 
+
     <script>
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+
+            const openButton = document.getElementById('staff-sidebar-open');
+            const sidebar = document.getElementById('staff-sidebar');
+            const overlay = document.getElementById('staff-sidebar-overlay');
+            const closeButton = document.getElementById('staff-sidebar-close');
+
+            if (!openButton || !sidebar) {
+                console.warn('Tombol atau sidebar Staff tidak ditemukan.');
+                return;
+            }
+
+            function openSidebar() {
+                sidebar.classList.remove('-translate-x-full');
+                overlay?.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+                openButton.setAttribute('aria-expanded', 'true');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.add('-translate-x-full');
+                overlay?.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                openButton.setAttribute('aria-expanded', 'false');
+            }
+
+            openButton.addEventListener('click', openSidebar);
+            closeButton?.addEventListener('click', closeSidebar);
+            overlay?.addEventListener('click', closeSidebar);
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeSidebar();
+                }
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    closeSidebar();
+                }
+            });
+        });
     </script>
 
     @stack('scripts')
+
 </body>
+
 </html>
