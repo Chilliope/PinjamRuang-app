@@ -47,4 +47,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Booking::class, 'reviewed_by');
     }
+
+    public function representedClasses(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            ClassRoom::class,
+            'class_classrep',
+            'user_id',
+            'class_id'
+        )->withTimestamps();
+    }
 }

@@ -19,4 +19,17 @@ class Room extends Model
     {
         return $this->belongsTo(Building::class);
     }
+
+    public function schedules()
+    {
+        return $this->hasMany(RoomSchedule::class);
+    }
+
+    public function replacementExceptions()
+    {
+        return $this->hasMany(
+            RoomScheduleException::class,
+            'replacement_room_id'
+        );
+    }
 }

@@ -66,7 +66,7 @@
             <span>Peminjaman Ruangan</span>
         </a>
 
-        <a href="{{ url('/staff/schedules') }}"
+        <a href="{{ route('staff.schedules.index') }}"
            class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition
            {{ request()->is('staff/schedules*') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50 hover:text-indigo-600' }}">
             <i data-lucide="calendar-days" class="h-5 w-5"></i>

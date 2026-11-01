@@ -3,7 +3,8 @@
 
     {{-- Brand --}}
     <div class="flex h-[84px] shrink-0 items-center gap-3 border-b border-slate-100 px-6">
-        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-200/70">
+        <div
+            class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-200/70">
             <i data-lucide="building-2" class="h-5 w-5"></i>
         </div>
 
@@ -16,8 +17,7 @@
             </p>
         </div>
 
-        <button id="close-sidebar"
-            type="button"
+        <button id="close-sidebar" type="button"
             class="ml-auto rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 lg:hidden"
             aria-label="Tutup sidebar">
             <i data-lucide="x" class="h-5 w-5"></i>
@@ -40,7 +40,7 @@
                         ? 'bg-indigo-50 text-indigo-700'
                         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
 
-                    @if(request()->routeIs('admin.index'))
+                    @if (request()->routeIs('admin.index'))
                         <span class="absolute bottom-2.5 left-0 top-2.5 w-[3px] rounded-r-full bg-indigo-600"></span>
                     @endif
 
@@ -51,9 +51,8 @@
 
                     <span>Dashboard</span>
 
-                    @if(request()->routeIs('admin.index'))
-                        <i data-lucide="chevron-right"
-                            class="ml-auto h-4 w-4 text-indigo-400">
+                    @if (request()->routeIs('admin.index'))
+                        <i data-lucide="chevron-right" class="ml-auto h-4 w-4 text-indigo-400">
                         </i>
                     @endif
                 </a>
@@ -65,7 +64,7 @@
                         ? 'bg-indigo-50 text-indigo-700'
                         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
 
-                    @if(request()->routeIs('users.*'))
+                    @if (request()->routeIs('users.*'))
                         <span class="absolute bottom-2.5 left-0 top-2.5 w-[3px] rounded-r-full bg-indigo-600"></span>
                     @endif
 
@@ -76,9 +75,8 @@
 
                     <span>User</span>
 
-                    @if(request()->routeIs('users.*'))
-                        <i data-lucide="chevron-right"
-                            class="ml-auto h-4 w-4 text-indigo-400">
+                    @if (request()->routeIs('users.*'))
+                        <i data-lucide="chevron-right" class="ml-auto h-4 w-4 text-indigo-400">
                         </i>
                     @endif
                 </a>
@@ -90,7 +88,7 @@
                         ? 'bg-indigo-50 text-indigo-700'
                         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
 
-                    @if(request()->routeIs('majors.*'))
+                    @if (request()->routeIs('majors.*'))
                         <span class="absolute bottom-2.5 left-0 top-2.5 w-[3px] rounded-r-full bg-indigo-600"></span>
                     @endif
 
@@ -101,9 +99,8 @@
 
                     <span>Major</span>
 
-                    @if(request()->routeIs('majors.*'))
-                        <i data-lucide="chevron-right"
-                            class="ml-auto h-4 w-4 text-indigo-400">
+                    @if (request()->routeIs('majors.*'))
+                        <i data-lucide="chevron-right" class="ml-auto h-4 w-4 text-indigo-400">
                         </i>
                     @endif
                 </a>
@@ -115,7 +112,7 @@
                         ? 'bg-indigo-50 text-indigo-700'
                         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
 
-                    @if(request()->routeIs('buildings.*'))
+                    @if (request()->routeIs('buildings.*'))
                         <span class="absolute bottom-2.5 left-0 top-2.5 w-[3px] rounded-r-full bg-indigo-600"></span>
                     @endif
 
@@ -126,9 +123,8 @@
 
                     <span>Building</span>
 
-                    @if(request()->routeIs('buildings.*'))
-                        <i data-lucide="chevron-right"
-                            class="ml-auto h-4 w-4 text-indigo-400">
+                    @if (request()->routeIs('buildings.*'))
+                        <i data-lucide="chevron-right" class="ml-auto h-4 w-4 text-indigo-400">
                         </i>
                     @endif
                 </a>
@@ -140,7 +136,7 @@
                         ? 'bg-indigo-50 text-indigo-700'
                         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
 
-                    @if(request()->routeIs('rooms.*'))
+                    @if (request()->routeIs('rooms.*'))
                         <span class="absolute bottom-2.5 left-0 top-2.5 w-[3px] rounded-r-full bg-indigo-600"></span>
                     @endif
 
@@ -151,11 +147,17 @@
 
                     <span>Room</span>
 
-                    @if(request()->routeIs('rooms.*'))
-                        <i data-lucide="chevron-right"
-                            class="ml-auto h-4 w-4 text-indigo-400">
+                    @if (request()->routeIs('rooms.*'))
+                        <i data-lucide="chevron-right" class="ml-auto h-4 w-4 text-indigo-400">
                         </i>
                     @endif
+                </a>
+
+                <a href="{{ route('classes.index') }}"
+                    class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition
+   {{ request()->is('admin/classes*') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50 hover:text-indigo-600' }}">
+                    <i data-lucide="graduation-cap" class="h-5 w-5"></i>
+                    <span>Manajemen Kelas</span>
                 </a>
 
             </div>
@@ -164,7 +166,8 @@
         {{-- Information --}}
         <div class="px-3">
             <div class="flex items-start gap-3 rounded-2xl border border-indigo-100/80 bg-indigo-50/60 p-3.5">
-                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm shadow-indigo-100">
+                <div
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm shadow-indigo-100">
                     <i data-lucide="calendar-check" class="h-[18px] w-[18px]"></i>
                 </div>
 
@@ -184,9 +187,7 @@
     @php
         $sidebarUser = auth()->user();
 
-        $sidebarName = $sidebarUser->fullname
-            ?? $sidebarUser->name
-            ?? 'User';
+        $sidebarName = $sidebarUser->fullname ?? ($sidebarUser->name ?? 'User');
 
         $sidebarEmail = $sidebarUser->email ?? '';
 
@@ -199,9 +200,11 @@
     <div class="shrink-0 border-t border-slate-100 bg-white p-4">
 
         {{-- Profile Card --}}
-        <div class="group mb-2 flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3 transition-colors hover:border-slate-200 hover:bg-slate-50">
+        <div
+            class="group mb-2 flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3 transition-colors hover:border-slate-200 hover:bg-slate-50">
 
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-sm font-bold text-white ring-4 ring-white">
+            <div
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-sm font-bold text-white ring-4 ring-white">
                 {{ strtoupper(substr($sidebarName, 0, 1)) }}
             </div>
 
@@ -214,7 +217,8 @@
                     {{ $sidebarEmail }}
                 </p>
 
-                <span class="mt-1.5 inline-flex max-w-full items-center gap-1 rounded-md border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
+                <span
+                    class="mt-1.5 inline-flex max-w-full items-center gap-1 rounded-md border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
                     <i data-lucide="shield-check" class="h-3 w-3 shrink-0"></i>
                     <span class="truncate">{{ $sidebarRole }}</span>
                 </span>
@@ -251,8 +255,7 @@
 </aside>
 
 {{-- Mobile Overlay --}}
-<div id="sidebar-overlay"
-    class="fixed inset-0 z-40 hidden bg-slate-900/30 backdrop-blur-[2px] lg:hidden">
+<div id="sidebar-overlay" class="fixed inset-0 z-40 hidden bg-slate-900/30 backdrop-blur-[2px] lg:hidden">
 </div>
 
 {{-- Mobile Toggle + Icons --}}
@@ -280,7 +283,7 @@
     closeButton?.addEventListener('click', closeSidebar);
     overlay?.addEventListener('click', closeSidebar);
 
-    document.addEventListener('keydown', function (event) {
+    document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             closeSidebar();
         }

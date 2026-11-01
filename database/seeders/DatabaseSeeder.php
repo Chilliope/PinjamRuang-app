@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
             MajorSeeder::class,
             BuildingSeeder::class,
             BookingSeeder::class,
+            BuildingStaffSeeder::class,
+            RoomSeeder::class,
         ]);
     }
 }
