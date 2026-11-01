@@ -156,7 +156,7 @@ class BookingController extends Controller
 
         abort_unless(
             $buildingId !== null
-                && Auth::user()
+                && auth()->user()
                 ->buildings()
                 ->where('buildings.id', $buildingId)
                 ->exists(),

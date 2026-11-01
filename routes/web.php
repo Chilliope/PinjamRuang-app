@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\StaffDashboardController;
 use App\Http\Controllers\Staff\BookingController as StaffBookingController;
+use App\Http\Controllers\Staff\RoomController as StaffRoomController;
 use App\Http\Controllers\ClassRepresentativeDashboardController;
 use App\Http\Controllers\ClassRepresentative\BookingController;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/bookings/{booking}', [StaffBookingController::class, 'show'])->name('bookings.show');
         Route::patch('/bookings/{booking}/approve', [StaffBookingController::class, 'approve'])->name('bookings.approve');
         Route::patch('/bookings/{booking}/reject', [StaffBookingController::class, 'reject'])->name('bookings.reject');
+
+        Route::resource('/rooms', StaffRoomController::class)->except(['show']);
     });
 
 
