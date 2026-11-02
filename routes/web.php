@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\StaffDashboardController;
 use App\Http\Controllers\Staff\BookingController as StaffBookingController;
 use App\Http\Controllers\Staff\RoomController as StaffRoomController;
+use App\Http\Controllers\Staff\ScheduleChangeController as StaffScheduleChangeController;
 use App\Http\Controllers\Staff\RoomScheduleController;
 use App\Http\Controllers\ClassRepresentativeDashboardController;
 use App\Http\Controllers\ClassRepresentative\BookingController;
@@ -43,6 +44,23 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('/rooms', StaffRoomController::class)->except(['show']);
         Route::resource('/schedules', RoomScheduleController::class)->except(['show']);
+
+        // Pengajuan perubahan jadwal
+        Route::get('/schedule-changes', [StaffScheduleChangeController::class, 'index'])
+            ->name('schedule-changes.index');
+
+        Route::patch('/schedule-changes/{scheduleChange}/approve', [StaffScheduleChangeController::class, 'approve'])
+            ->name('schedule-changes.approve');
+
+        Route::patch('/schedule-changes/{scheduleChange}/reject', [StaffScheduleChangeController::class, 'reject'])
+            ->name('schedule-changes.reject');
+
+        // Perubahan jadwal langsung oleh Staff
+        Route::get('/schedule-changes/direct/create', [StaffScheduleChangeController::class, 'directCreate'])
+            ->name('schedule-changes.direct.create');
+
+        Route::post('/schedule-changes/direct', [StaffScheduleChangeController::class, 'directStore'])
+            ->name('schedule-changes.direct.store');
     });
 
 
@@ -51,7 +69,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('/bookings', BookingController::class)->only(['index', 'create', 'store', 'show']);
 
         Route::get('/schedule-changes', [ScheduleChangeController::class, 'index',])->name('schedule-changes.index');
-        Route::get('/schedule-changes/{schedule}/create', [ScheduleChangeController::class,'create',])->name('schedule-changes.create');
+        Route::get('/schedule-changes/{schedule}/create', [ScheduleChangeController::class, 'create',])->name('schedule-changes.create');
         Route::post('/schedule-changes/{schedule}', [ScheduleChangeController::class, 'store',])->name('schedule-changes.store');
     });
 });

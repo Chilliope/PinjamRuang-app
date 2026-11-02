@@ -188,6 +188,89 @@
                             <i data-lucide="clock" class="h-5 w-5 text-slate-400"></i>
                         </div>
 
+
+                        {{-- Informasi Pengecualian Jadwal --}}
+                        @if ($schedule->exceptions->isNotEmpty())
+                            <div class="mt-4 space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="calendar-clock" class="h-4 w-4 text-indigo-500"></i>
+                                    <p class="text-xs font-semibold text-slate-700">
+                                        Perubahan Jadwal Mendatang
+                                    </p>
+                                </div>
+
+                                @foreach ($schedule->exceptions as $exception)
+                                    @php
+                                        $exceptionTypes = [
+                                            'online' => [
+                                                'label' => 'Perkuliahan Online',
+                                                'class' => 'bg-violet-100 text-violet-700',
+                                                'icon' => 'monitor',
+                                            ],
+                                            'postponed' => [
+                                                'label' => 'Ditunda',
+                                                'class' => 'bg-amber-100 text-amber-700',
+                                                'icon' => 'calendar-clock',
+                                            ],
+                                            'cancelled' => [
+                                                'label' => 'Dibatalkan',
+                                                'class' => 'bg-rose-100 text-rose-700',
+                                                'icon' => 'calendar-x',
+                                            ],
+                                            'rescheduled' => [
+                                                'label' => 'Dijadwalkan Ulang',
+                                                'class' => 'bg-blue-100 text-blue-700',
+                                                'icon' => 'calendar-sync',
+                                            ],
+                                        ];
+
+                                        $exceptionInfo = $exceptionTypes[$exception->type] ?? [
+                                            'label' => ucfirst($exception->type),
+                                            'class' => 'bg-slate-100 text-slate-700',
+                                            'icon' => 'calendar',
+                                        ];
+                                    @endphp
+
+                                    <div class="rounded-xl border border-slate-200 bg-white p-3">
+                                        <div class="flex flex-wrap items-center justify-between gap-2">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-semibold {{ $exceptionInfo['class'] }}">
+                                                <i data-lucide="{{ $exceptionInfo['icon'] }}" class="h-3 w-3"></i>
+                                                {{ $exceptionInfo['label'] }}
+                                            </span>
+
+                                            <span class="text-[11px] font-medium text-slate-500">
+                                                {{ $exception->exception_date->format('d M Y') }}
+                                            </span>
+                                        </div>
+
+                                        @if ($exception->type === 'rescheduled')
+                                            <div class="mt-3 rounded-lg bg-blue-50 p-3">
+                                                <p class="text-[10px] font-semibold uppercase tracking-wider text-blue-500">
+                                                    Jadwal Pengganti
+                                                </p>
+
+                                                <p class="mt-1 text-sm font-semibold text-blue-900">
+                                                    {{ $exception->replacementRoom?->room_name ?? 'Ruangan tidak tersedia' }}
+                                                </p>
+
+                                                <p class="mt-1 text-xs text-blue-700">
+                                                    {{ $exception->replacement_date?->format('d M Y') ?? '-' }}
+                                                    ·
+                                                    {{ $exception->replacement_start_time ?? '-' }}
+                                                    – {{ $exception->replacement_end_time ?? '-' }}
+                                                </p>
+                                            </div>
+                                        @endif
+
+                                        <p class="mt-2 text-xs leading-relaxed text-slate-500">
+                                            {{ $exception->reason }}
+                                        </p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
                         <div class="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
                             <a href="{{ route('staff.schedules.edit', $schedule) }}"
                                 class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 py-2.5 text-xs font-semibold text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">

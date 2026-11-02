@@ -17,21 +17,30 @@ class ScheduleChangeController extends Controller
     /**
      * Menampilkan pengajuan perubahan jadwal milik Class Representative.
      */
+
     public function index()
     {
         $classIds = Auth::user()
             ->representedClasses()
             ->pluck('classes.id');
 
+        // Jadwal rutin beserta perubahan yang sudah disetujui.
         $schedules = RoomSchedule::with([
             'room.building',
             'classRoom',
+            'exceptions' => function ($query) {
+                $query->where('status', 'approved')
+                    ->whereDate('exception_date', '>=', today())
+                    ->with('replacementRoom')
+                    ->orderBy('exception_date');
+            },
         ])
             ->whereIn('class_id', $classIds)
-            ->orderBy('day_of_week')
+            ->orderByRaw("FIELD(day_of_week, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')")
             ->orderBy('start_time')
             ->get();
 
+        // Riwayat seluruh pengajuan, termasuk yang masih menunggu.
         $changes = RoomScheduleException::with([
             'schedule.room',
             'replacementRoom',
@@ -48,6 +57,7 @@ class ScheduleChangeController extends Controller
             'changes'
         ));
     }
+
 
     /**
      * Menampilkan form pengajuan perubahan.

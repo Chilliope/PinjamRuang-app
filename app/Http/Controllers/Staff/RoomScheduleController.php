@@ -107,7 +107,16 @@ class RoomScheduleController extends Controller
             ->orderBy('room_name')
             ->get();
 
-        $query = RoomSchedule::with(['room.building', 'classRoom'])
+        $query = RoomSchedule::with([
+            'room.building',
+            'classRoom',
+            'exceptions' => function ($query) {
+                $query->where('status', 'approved')
+                    ->whereDate('exception_date', '>=', today())
+                    ->with('replacementRoom')
+                    ->orderBy('exception_date');
+            },
+        ])
             ->whereIn('room_id', $this->roomIds());
 
         if ($request->filled('search')) {
